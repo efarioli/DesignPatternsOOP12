@@ -1,0 +1,28 @@
+﻿# Build folders
+bin/
+obj/
+Debug/
+Release/
+*.user
+*.rsuser
+*.suo
+
+# Visual Studio
+.vs/
+.idea/
+
+# .NET artifacts
+project.lock.json
+project.fragment.lock.json
+
+# SQLite database
+*.db
+
+# Logs
+*.log
+
+# User secrets
+secrets.json
+
+# Auto-generated files
+*.generated.cs
