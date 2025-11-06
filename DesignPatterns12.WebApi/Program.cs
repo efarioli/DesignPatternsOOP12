@@ -19,6 +19,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // --------------------
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 // --------------------
 // Swagger / OpenAPI
@@ -103,6 +105,47 @@ app.MapDelete("/api/products/{id:guid}", async (Guid id, IProductService service
 {
     var deleted = await service.DeleteAsync(id);
     return deleted ? Results.NoContent() : Results.NotFound();
+});
+
+
+// =======================
+// USERS ENDPOINTS
+// =======================
+
+app.MapGet("/api/users", async (IUserService service) =>
+{
+    var users = await service.GetAllAsync();
+    return Results.Ok(users);
+});
+
+app.MapGet("/api/users/{id:guid}", async (IUserService service, Guid id) =>
+{
+    var user = await service.GetByIdAsync(id);
+    return user is not null ? Results.Ok(user) : Results.NotFound();
+});
+
+app.MapPost("/api/users", async (UserCreateDto dto, IUserService service) =>
+{
+    if (string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Email))
+        return Results.BadRequest("Name and Email are required.");
+
+    var user = new User(dto.Username, dto.Email);
+    await service.CreateAsync(user);
+
+    return Results.Created($"/api/users/{user.Id}", user);
+});
+
+app.MapPut("/api/users/{id:guid}", async (Guid id, UserCreateDto dto, IUserService service) =>
+{
+    var updated = new User(dto.Username, dto.Email);
+    var success = await service.UpdateAsync(id, updated);
+    return success ? Results.Ok() : Results.NotFound();
+});
+
+app.MapDelete("/api/users/{id:guid}", async (Guid id, IUserService service) =>
+{
+    var success = await service.DeleteAsync(id);
+    return success ? Results.Ok() : Results.NotFound();
 });
 
 // --------------------

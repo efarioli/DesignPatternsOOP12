@@ -16,6 +16,7 @@ namespace DesignPatterns12.Infrastructure.Data
 
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<User> Users => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +24,15 @@ namespace DesignPatterns12.Infrastructure.Data
                 .Property(p => p.Name)
                 .IsRequired()
                 .HasMaxLength(200);
+
+            // Optional: enforce unique constraints
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
         }
     }
 }
